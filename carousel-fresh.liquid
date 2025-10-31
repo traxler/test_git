@@ -1,0 +1,522 @@
+{% assign carousel_id = block.id | replace: '_', '' | downcase %}
+
+{% style %}
+  .carousel-wrapper-{{ carousel_id }} {
+    position: relative;
+    width: 100%;
+  }
+
+  .carousel-slides-{{ carousel_id }} {
+    position: relative;
+    width: 100%;
+    min-height: 400px;
+  }
+
+  .carousel-slide-{{ carousel_id }} {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.6s ease-in-out, visibility 0.6s;
+  }
+
+  .carousel-slide-{{ carousel_id }}.active {
+    opacity: 1;
+    visibility: visible;
+    z-index: 2;
+  }
+
+  .carousel-slide-content-{{ carousel_id }} {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+    padding: 40px;
+  }
+
+  .carousel-image-column-{{ carousel_id }} {
+    padding: 20px;
+  }
+
+  .carousel-image-{{ carousel_id }} img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+  }
+
+  .carousel-text-column-{{ carousel_id }} {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .carousel-heading-{{ carousel_id }} {
+    max-width: 600px;
+    margin: 0 0 16px 0;
+  }
+
+  .carousel-subheading-{{ carousel_id }} {
+    max-width: 600px;
+    margin: 0 0 16px 0;
+  }
+
+  .carousel-body-{{ carousel_id }} {
+    max-width: 600px;
+    margin: 0 0 40px 0;
+  }
+
+  .carousel-product-card-{{ carousel_id }} {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: white;
+    border-radius: 8px;
+    padding: 12px;
+    max-width: 280px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .carousel-product-card-{{ carousel_id }}:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .carousel-product-image-{{ carousel_id }} {
+    width: 60px;
+    height: 60px;
+    flex-shrink: 0;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .carousel-product-image-{{ carousel_id }} img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .carousel-product-info-{{ carousel_id }} {
+    flex: 1;
+  }
+
+  .carousel-product-title-{{ carousel_id }} {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .carousel-product-price-{{ carousel_id }} {
+    margin: 0;
+    font-size: 13px;
+  }
+
+  .carousel-controls-{{ carousel_id }} {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 0;
+  }
+
+  .carousel-arrow-{{ carousel_id }} {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+  }
+
+  .carousel-arrow-{{ carousel_id }} svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .carousel-dots-{{ carousel_id }} {
+    display: flex;
+    gap: 8px;
+  }
+
+  .carousel-dot-{{ carousel_id }} {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #d1d1d1;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .carousel-dot-{{ carousel_id }}.active {
+    background: #272727;
+  }
+
+  @media screen and (max-width: 749px) {
+    .carousel-slide-content-{{ carousel_id }} {
+      grid-template-columns: 1fr;
+      gap: 24px;
+      padding: 24px;
+    }
+  }
+{% endstyle %}
+
+<div class="carousel-wrapper-{{ carousel_id }}" data-carousel-id="{{ carousel_id }}">
+  <div class="carousel-slides-{{ carousel_id }}">
+    {% for i in (1..5) %}
+      {% assign heading = block.settings[forloop.index | prepend: 'slide_' | append: '_heading'] %}
+      {% assign subheading = block.settings[forloop.index | prepend: 'slide_' | append: '_subheading'] %}
+      {% assign body = block.settings[forloop.index | prepend: 'slide_' | append: '_body'] %}
+      {% assign image = block.settings[forloop.index | prepend: 'slide_' | append: '_image'] %}
+      {% assign product = block.settings[forloop.index | prepend: 'slide_' | append: '_product'] %}
+      {% assign bg_color = block.settings[forloop.index | prepend: 'slide_' | append: '_bg_color'] %}
+      
+      {% if heading != blank or subheading != blank or body != blank or image != blank or product != blank %}
+        <div class="carousel-slide-{{ carousel_id }} {% if forloop.first %}active{% endif %}" 
+             style="background-color: {{ bg_color }};"
+             data-slide-index="{{ forloop.index0 }}">
+          <div class="carousel-slide-content-{{ carousel_id }}">
+            <div class="carousel-image-column-{{ carousel_id }}">
+              {% if image %}
+                <div class="carousel-image-{{ carousel_id }}">
+                  <img src="{{ image | image_url: width: 800 }}" 
+                       alt="{{ image.alt | escape }}"
+                       loading="lazy">
+                </div>
+              {% endif %}
+            </div>
+            
+            <div class="carousel-text-column-{{ carousel_id }}">
+              {% if heading != blank %}
+                <h2 class="h2 carousel-heading-{{ carousel_id }}">{{ heading }}</h2>
+              {% endif %}
+              
+              {% if subheading != blank %}
+                <p class="subheading carousel-subheading-{{ carousel_id }}">{{ subheading }}</p>
+              {% endif %}
+              
+              {% if body != blank %}
+                <div class="carousel-body-{{ carousel_id }}">{{ body }}</div>
+              {% endif %}
+              
+              {% if product %}
+                <a href="{{ product.url }}" class="carousel-product-card-{{ carousel_id }}">
+                  <div class="carousel-product-image-{{ carousel_id }}">
+                    {% if product.featured_image %}
+                      <img src="{{ product.featured_image | image_url: width: 120 }}" 
+                           alt="{{ product.featured_image.alt | escape }}">
+                    {% endif %}
+                  </div>
+                  <div class="carousel-product-info-{{ carousel_id }}">
+                    <p class="carousel-product-title-{{ carousel_id }}">{{ product.title }}</p>
+                    <p class="carousel-product-price-{{ carousel_id }}">{{ product.price | money }}</p>
+                  </div>
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <div class="carousel-controls-{{ carousel_id }}">
+    <button class="carousel-arrow-{{ carousel_id }}" data-action="prev" aria-label="Previous">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="15 18 9 12 15 6"></polyline>
+      </svg>
+    </button>
+    
+    <div class="carousel-dots-{{ carousel_id }}"></div>
+    
+    <button class="carousel-arrow-{{ carousel_id }}" data-action="next" aria-label="Next">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="9 18 15 12 9 6"></polyline>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script>
+(function() {
+  const carouselId = '{{ carousel_id }}';
+  const wrapper = document.querySelector('[data-carousel-id="' + carouselId + '"]');
+  
+  if (!wrapper) return;
+  
+  const slides = wrapper.querySelectorAll('.carousel-slide-' + carouselId);
+  const dotsContainer = wrapper.querySelector('.carousel-dots-' + carouselId);
+  const prevBtn = wrapper.querySelector('[data-action="prev"]');
+  const nextBtn = wrapper.querySelector('[data-action="next"]');
+  
+  let currentIndex = 0;
+  let autoplayTimer = null;
+  
+  // Create dots
+  slides.forEach(function(slide, index) {
+    const dot = document.createElement('button');
+    dot.className = 'carousel-dot-' + carouselId;
+    if (index === 0) dot.classList.add('active');
+    dot.addEventListener('click', function() {
+      goToSlide(index);
+    });
+    dotsContainer.appendChild(dot);
+  });
+  
+  const dots = dotsContainer.querySelectorAll('.carousel-dot-' + carouselId);
+  
+  // Set container height
+  function setHeight() {
+    let maxHeight = 0;
+    slides.forEach(function(slide) {
+      const height = slide.scrollHeight;
+      if (height > maxHeight) maxHeight = height;
+    });
+    wrapper.querySelector('.carousel-slides-' + carouselId).style.minHeight = maxHeight + 'px';
+  }
+  
+  setHeight();
+  
+  // Go to slide
+  function goToSlide(index) {
+    if (index === currentIndex) return;
+    
+    slides[currentIndex].classList.remove('active');
+    dots[currentIndex].classList.remove('active');
+    
+    currentIndex = index;
+    
+    slides[currentIndex].classList.add('active');
+    dots[currentIndex].classList.add('active');
+    
+    resetAutoplay();
+  }
+  
+  // Navigation
+  prevBtn.addEventListener('click', function() {
+    const newIndex = currentIndex === 0 ? slides.length - 1 : currentIndex - 1;
+    goToSlide(newIndex);
+  });
+  
+  nextBtn.addEventListener('click', function() {
+    const newIndex = currentIndex === slides.length - 1 ? 0 : currentIndex + 1;
+    goToSlide(newIndex);
+  });
+  
+  // Autoplay
+  function startAutoplay() {
+    autoplayTimer = setInterval(function() {
+      const newIndex = currentIndex === slides.length - 1 ? 0 : currentIndex + 1;
+      goToSlide(newIndex);
+    }, 30000);
+  }
+  
+  function stopAutoplay() {
+    if (autoplayTimer) {
+      clearInterval(autoplayTimer);
+      autoplayTimer = null;
+    }
+  }
+  
+  function resetAutoplay() {
+    stopAutoplay();
+    startAutoplay();
+  }
+  
+  // Start autoplay if more than 1 slide
+  if (slides.length > 1) {
+    startAutoplay();
+    
+    wrapper.addEventListener('mouseenter', stopAutoplay);
+    wrapper.addEventListener('mouseleave', startAutoplay);
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Product Carousel",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Slide 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "slide_1_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "slide_1_heading",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "slide_1_subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "richtext",
+      "id": "slide_1_body",
+      "label": "Body text"
+    },
+    {
+      "type": "product",
+      "id": "slide_1_product",
+      "label": "Product"
+    },
+    {
+      "type": "color",
+      "id": "slide_1_bg_color",
+      "label": "Background color",
+      "default": "#f4f4f4"
+    },
+    {
+      "type": "header",
+      "content": "Slide 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "slide_2_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "slide_2_heading",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "slide_2_subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "richtext",
+      "id": "slide_2_body",
+      "label": "Body text"
+    },
+    {
+      "type": "product",
+      "id": "slide_2_product",
+      "label": "Product"
+    },
+    {
+      "type": "color",
+      "id": "slide_2_bg_color",
+      "label": "Background color",
+      "default": "#f4f4f4"
+    },
+    {
+      "type": "header",
+      "content": "Slide 3"
+    },
+    {
+      "type": "image_picker",
+      "id": "slide_3_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "slide_3_heading",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "slide_3_subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "richtext",
+      "id": "slide_3_body",
+      "label": "Body text"
+    },
+    {
+      "type": "product",
+      "id": "slide_3_product",
+      "label": "Product"
+    },
+    {
+      "type": "color",
+      "id": "slide_3_bg_color",
+      "label": "Background color",
+      "default": "#f4f4f4"
+    },
+    {
+      "type": "header",
+      "content": "Slide 4"
+    },
+    {
+      "type": "image_picker",
+      "id": "slide_4_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "slide_4_heading",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "slide_4_subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "richtext",
+      "id": "slide_4_body",
+      "label": "Body text"
+    },
+    {
+      "type": "product",
+      "id": "slide_4_product",
+      "label": "Product"
+    },
+    {
+      "type": "color",
+      "id": "slide_4_bg_color",
+      "label": "Background color",
+      "default": "#f4f4f4"
+    },
+    {
+      "type": "header",
+      "content": "Slide 5"
+    },
+    {
+      "type": "image_picker",
+      "id": "slide_5_image",
+      "label": "Image"
+    },
+    {
+      "type": "text",
+      "id": "slide_5_heading",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "slide_5_subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "richtext",
+      "id": "slide_5_body",
+      "label": "Body text"
+    },
+    {
+      "type": "product",
+      "id": "slide_5_product",
+      "label": "Product"
+    },
+    {
+      "type": "color",
+      "id": "slide_5_bg_color",
+      "label": "Background color",
+      "default": "#f4f4f4"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Carousel"
+    }
+  ]
+}
+{% endschema %}
